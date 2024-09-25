@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Create Your Moodboard Wallpaper</h1>
+    
+    <div id="loading" class="text-center py-8 hidden">
+        <p class="text-xl mb-4">Fetching your content...</p>
+        <div class="loader"></div>
+    </div>
+    
+    <div id="wallpaper-creator" class="hidden">
+        <div class="grid grid-cols-2 gap-8">
+            <div>
+                <h2 class="text-2xl font-semibold mb-4">Preview</h2>
+                <div id="wallpaper-preview" class="border-2 border-gray-300 rounded-lg overflow-hidden" style="width: 300px; height: 650px;">
+                    <!-- Wallpaper preview will be inserted here -->
+                </div>
+            </div>
+            <div>
+                <h2 class="text-2xl font-semibold mb-4">Customization</h2>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="template-select">
+                        Template
+                    </label>
+                    <select id="template-select" class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="template1">Template 1</option>
+                        <option value="template2">Template 2</option>
+                        <option value="template3">Template 3</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Color Palette
+                    </label>
+                    <div id="color-palette" class="flex space-x-2">
+                        <!-- Color swatches will be inserted here -->
+                    </div>
+                </div>
+                <button id="regenerate-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Regenerate
+                </button>
+                <button id="download-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-4">
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/wallpaper.js') }}"></script>
+{% endblock %}
