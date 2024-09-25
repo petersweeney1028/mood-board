@@ -1,0 +1,24 @@
+Project Overview:
+
+I’m developing a web app aimed at high school and college students, predominantly girls, that allows users to create custom iPhone wallpapers in the style of a moodboard. The moodboards will be generated using a template-based approach where content from a user's Instagram and Spotify accounts is automatically pulled and populated into pre-designed templates. The key idea is to give users a personalized aesthetic wallpaper that reflects their music tastes and social media style.
+
+Core Features:
+
+Instagram Integration:
+The app will connect to the user’s Instagram account via API, pulling data like their most recent posts or favorite photos. These images will be used to reflect the user’s personal aesthetic, which might include their color schemes, filters, or general vibe.
+
+Spotify Integration:
+By connecting to Spotify, the app will pull album art from the user's top songs, artists, or playlists. These album covers will serve as a central design element in the moodboard, highlighting the user’s music preferences.
+
+Pre-Designed Templates:
+The moodboards will be created using a variety of pre-made design templates. These templates will include specific placeholders where Instagram images and Spotify album covers will be inserted automatically. The templates will feature different styles, such as minimalist, bold, vintage, and collage.
+
+Customization Options:
+Users can select from different templates and, in some cases, adjust certain aspects of the moodboard—like changing the background color, moving images around, or adding text. However, the primary focus is on streamlining the process by automatically filling the templates with content from their connected accounts.
+
+Real-Time Preview and Download:
+The app will provide a real-time preview of the moodboard as it’s being built. Once satisfied, users can download their customized wallpaper, which will be sized appropriately for iPhone screens.
+
+Use Case: The app appeals to younger users who enjoy creating and curating their digital space. It leverages the visual content they already engage with on Instagram and the music they listen to on Spotify to create a fun, aesthetic, and personalized wallpaper. The combination of two platforms taps into their interests and creates a highly customized, expressive digital product they can display on their phones.
+
+Why It Stands Out: The app simplifies the creative process by automating much of the aesthetic curation based on the user's personal data. Users don’t have to manually select or upload images—they can simply log into Instagram and Spotify, and the app does the work of pulling and arranging content into beautiful moodboard layouts. It also allows for limited personalization, making the user feel involved in the creative process without overwhelming them with too many choices.
