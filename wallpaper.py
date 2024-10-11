@@ -41,16 +41,8 @@ def generate_wallpaper():
     sticker_size = data['sticker_size']
     sticker_rotation = data.get('sticker_rotation', 0)
     sticker_opacity = data.get('sticker_opacity', 255)
-    text_color = data.get('text_color', (255, 255, 255))
-    text_position = data.get('text_position', 'center')
-    text_font = data.get('text_font', 'arial.ttf')
-    text_size = data.get('text_size', 48)
     
-    wallpaper = create_wallpaper_image(
-        template, color_palette, spotify_albums, custom_text, filter_type,
-        stickers, sticker_size, sticker_rotation, sticker_opacity,
-        text_color, text_position, text_font, text_size
-    )
+    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity)
     
     img_io = BytesIO()
     wallpaper.save(img_io, 'PNG')
@@ -71,11 +63,7 @@ def select_template(color_palette):
     templates = ['template1.svg', 'template2.svg', 'template3.svg']
     return random.choice(templates)
 
-def create_wallpaper_image(
-    template, color_palette, spotify_albums, custom_text, filter_type,
-    stickers, sticker_size, sticker_rotation, sticker_opacity,
-    text_color, text_position, text_font, text_size
-):
+def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity):
     wallpaper = Image.new('RGB', (1242, 2688))  # iPhone 12 Pro Max resolution
     draw = ImageDraw.Draw(wallpaper)
 
@@ -113,15 +101,10 @@ def create_wallpaper_image(
 
     # Add custom text
     if custom_text:
-        font = ImageFont.truetype(text_font, text_size)
+        font = ImageFont.truetype("arial.ttf", 48)
         text_width, text_height = draw.textsize(custom_text, font=font)
-        if text_position == 'top':
-            text_position = ((wallpaper.width - text_width) // 2, 50)
-        elif text_position == 'bottom':
-            text_position = ((wallpaper.width - text_width) // 2, wallpaper.height - text_height - 50)
-        else:  # center
-            text_position = ((wallpaper.width - text_width) // 2, (wallpaper.height - text_height) // 2)
-        draw.text(text_position, custom_text, fill=tuple(text_color), font=font)
+        text_position = ((wallpaper.width - text_width) // 2, 50)
+        draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
 
     # Add stickers with rotation and opacity
     for sticker in stickers:

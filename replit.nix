@@ -1,6 +1,5 @@
 {pkgs}: {
   deps = [
-    pkgs.openssl
     pkgs.zlib
     pkgs.tk
     pkgs.tcl

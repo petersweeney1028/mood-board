@@ -14,7 +14,6 @@ requests = "^2.32.3"
 pillow = "^10.4.0"
 colorthief = "^0.2.1"
 psycopg2-binary = "^2.9.9"
-pyopenssl = "^24.2.1"
 
 
 [build-system]
