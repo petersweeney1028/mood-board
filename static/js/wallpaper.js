@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterSelect = document.getElementById('filter-select');
     const stickerSelection = document.getElementById('sticker-selection');
     const stickerSize = document.getElementById('sticker-size');
+    const stickerRotation = document.getElementById('sticker-rotation');
+    const stickerOpacity = document.getElementById('sticker-opacity');
     const regenerateBtn = document.getElementById('regenerate-btn');
     const downloadBtn = document.getElementById('download-btn');
 
@@ -84,6 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = customText.value;
         const filter = filterSelect.value;
         const size = stickerSize.value;
+        const rotation = stickerRotation.value;
+        const opacity = stickerOpacity.value;
         const data = {
             template: template,
             color_palette: contentData.color_palette,
@@ -91,7 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
             custom_text: text,
             filter: filter,
             stickers: selectedStickers,
-            sticker_size: parseInt(size)
+            sticker_size: parseInt(size),
+            sticker_rotation: parseInt(rotation),
+            sticker_opacity: parseInt(opacity)
         };
 
         fetch('/api/generate_wallpaper', {
@@ -124,6 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
     customText.addEventListener('input', generateWallpaper);
     filterSelect.addEventListener('change', generateWallpaper);
     stickerSize.addEventListener('input', generateWallpaper);
+    stickerRotation.addEventListener('input', generateWallpaper);
+    stickerOpacity.addEventListener('input', generateWallpaper);
 
     // Initial content fetch
     fetchContent();

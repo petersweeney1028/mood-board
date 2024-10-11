@@ -5,6 +5,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 import random
 from color_analysis import get_color_palette
+import math
 
 wallpaper_bp = Blueprint('wallpaper', __name__)
 
@@ -38,8 +39,10 @@ def generate_wallpaper():
     filter_type = data['filter']
     stickers = data['stickers']
     sticker_size = data['sticker_size']
+    sticker_rotation = data.get('sticker_rotation', 0)
+    sticker_opacity = data.get('sticker_opacity', 255)
     
-    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size)
+    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity)
     
     img_io = BytesIO()
     wallpaper.save(img_io, 'PNG')
@@ -60,7 +63,7 @@ def select_template(color_palette):
     templates = ['template1.svg', 'template2.svg', 'template3.svg']
     return random.choice(templates)
 
-def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size):
+def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity):
     wallpaper = Image.new('RGB', (1242, 2688))  # iPhone 12 Pro Max resolution
     draw = ImageDraw.Draw(wallpaper)
 
@@ -103,13 +106,23 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
         text_position = ((wallpaper.width - text_width) // 2, 50)
         draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
 
-    # Add stickers
+    # Add stickers with rotation and opacity
     for sticker in stickers:
         sticker_font = ImageFont.truetype("arial.ttf", sticker_size)
         sticker_width, sticker_height = draw.textsize(sticker, font=sticker_font)
         x = random.randint(0, wallpaper.width - sticker_width)
         y = random.randint(0, wallpaper.height - sticker_height)
-        draw.text((x, y), sticker, fill=tuple(color_palette[2 % len(color_palette)]), font=sticker_font)
+        
+        # Create a new image for the rotated sticker
+        sticker_img = Image.new('RGBA', (sticker_width, sticker_height), (0, 0, 0, 0))
+        sticker_draw = ImageDraw.Draw(sticker_img)
+        sticker_draw.text((0, 0), sticker, fill=tuple(color_palette[2 % len(color_palette)] + (sticker_opacity,)), font=sticker_font)
+        
+        # Rotate the sticker
+        rotated_sticker = sticker_img.rotate(sticker_rotation, expand=True, resample=Image.BICUBIC)
+        
+        # Paste the rotated sticker onto the wallpaper
+        wallpaper.paste(rotated_sticker, (x, y), rotated_sticker)
 
     return wallpaper
 
