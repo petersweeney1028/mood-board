@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, send_file
 from flask_login import login_required, current_user
 import requests
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 import random
 from color_analysis import get_color_palette
 
@@ -37,8 +37,9 @@ def generate_wallpaper():
     custom_text = data['custom_text']
     filter_type = data['filter']
     stickers = data['stickers']
+    sticker_size = data['sticker_size']
     
-    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers)
+    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size)
     
     img_io = BytesIO()
     wallpaper.save(img_io, 'PNG')
@@ -59,7 +60,7 @@ def select_template(color_palette):
     templates = ['template1.svg', 'template2.svg', 'template3.svg']
     return random.choice(templates)
 
-def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers):
+def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size):
     wallpaper = Image.new('RGB', (1242, 2688))  # iPhone 12 Pro Max resolution
     draw = ImageDraw.Draw(wallpaper)
 
@@ -87,6 +88,10 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
         wallpaper = apply_sepia(wallpaper)
     elif filter_type == 'blur':
         wallpaper = wallpaper.filter(ImageFilter.GaussianBlur(radius=5))
+    elif filter_type == 'vintage':
+        wallpaper = apply_vintage(wallpaper)
+    elif filter_type == 'vignette':
+        wallpaper = apply_vignette(wallpaper)
 
     # Add custom text
     font = ImageFont.truetype("arial.ttf", 48)
@@ -95,8 +100,8 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
     draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
 
     # Add stickers
-    for i, sticker in enumerate(stickers):
-        sticker_font = ImageFont.truetype("arial.ttf", 72)
+    for sticker in stickers:
+        sticker_font = ImageFont.truetype("arial.ttf", sticker_size)
         sticker_width, sticker_height = draw.textsize(sticker, font=sticker_font)
         x = random.randint(0, wallpaper.width - sticker_width)
         y = random.randint(0, wallpaper.height - sticker_height)
@@ -115,3 +120,18 @@ def apply_sepia(image):
             tb = int(0.272 * r + 0.534 * g + 0.131 * b)
             pixels[px, py] = (min(tr, 255), min(tg, 255), min(tb, 255))
     return image
+
+def apply_vintage(image):
+    sepia_image = apply_sepia(image)
+    enhancer = ImageEnhance.Contrast(sepia_image)
+    return enhancer.enhance(0.8)
+
+def apply_vignette(image):
+    width, height = image.size
+    mask = Image.new('L', (width, height), 255)
+    draw = ImageDraw.Draw(mask)
+    for i in range(20):
+        box = [i, i, width - i, height - i]
+        draw.rectangle(box, fill=255 - i * 10)
+    blurred_mask = mask.filter(ImageFilter.GaussianBlur(radius=10))
+    return Image.composite(image, Image.new('RGB', (width, height), (0, 0, 0)), blurred_mask)

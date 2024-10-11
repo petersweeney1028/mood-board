@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customText = document.getElementById('custom-text');
     const filterSelect = document.getElementById('filter-select');
     const stickerSelection = document.getElementById('sticker-selection');
+    const stickerSize = document.getElementById('sticker-size');
     const regenerateBtn = document.getElementById('regenerate-btn');
     const downloadBtn = document.getElementById('download-btn');
 
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateStickerSelection() {
-        const stickers = ['🎵', '🎶', '🎸', '🎹', '🎤', '🎧', '💿', '🔊'];
+        const stickers = ['🎵', '🎶', '🎸', '🎹', '🎤', '🎧', '💿', '🔊', '🎼', '🎷', '🎺', '🪕'];
         stickerSelection.innerHTML = '';
         stickers.forEach(sticker => {
             const stickerElement = document.createElement('div');
@@ -82,13 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const template = templateSelect.value;
         const text = customText.value;
         const filter = filterSelect.value;
+        const size = stickerSize.value;
         const data = {
             template: template,
             color_palette: contentData.color_palette,
             spotify: contentData.spotify,
             custom_text: text,
             filter: filter,
-            stickers: selectedStickers
+            stickers: selectedStickers,
+            sticker_size: parseInt(size)
         };
 
         fetch('/api/generate_wallpaper', {
@@ -120,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     templateSelect.addEventListener('change', generateWallpaper);
     customText.addEventListener('input', generateWallpaper);
     filterSelect.addEventListener('change', generateWallpaper);
+    stickerSize.addEventListener('input', generateWallpaper);
 
     // Initial content fetch
     fetchContent();

@@ -52,6 +52,8 @@
                         <option value="grayscale">Grayscale</option>
                         <option value="sepia">Sepia</option>
                         <option value="blur">Blur</option>
+                        <option value="vintage">Vintage</option>
+                        <option value="vignette">Vignette</option>
                     </select>
                 </div>
                 <div class="mb-4">
@@ -61,6 +63,12 @@
                     <div id="sticker-selection" class="grid grid-cols-4 gap-2">
                         <!-- Sticker options will be inserted here -->
                     </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="sticker-size">
+                        Sticker Size
+                    </label>
+                    <input type="range" id="sticker-size" min="32" max="128" value="72" class="w-full">
                 </div>
                 <button id="regenerate-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Regenerate
