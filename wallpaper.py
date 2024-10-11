@@ -64,8 +64,10 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
     wallpaper = Image.new('RGB', (1242, 2688))  # iPhone 12 Pro Max resolution
     draw = ImageDraw.Draw(wallpaper)
 
+    # Set background color
     wallpaper.paste(tuple(color_palette[0]), [0, 0, wallpaper.size[0], wallpaper.size[1]])
 
+    # Apply template
     if template == 'template1.svg':
         positions = [(62, 134, 1180, 1252), (62, 1436, 1180, 2554)]
     elif template == 'template2.svg':
@@ -73,6 +75,7 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
     else:  # template3.svg
         positions = [(62, 134, 621, 1252), (621, 134, 1180, 1252), (62, 1436, 1180, 2554)]
 
+    # Place album covers
     for i, pos in enumerate(positions):
         if i < len(spotify_albums):
             img_url = spotify_albums[i]['url']
@@ -94,10 +97,11 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
         wallpaper = apply_vignette(wallpaper)
 
     # Add custom text
-    font = ImageFont.truetype("arial.ttf", 48)
-    text_width, text_height = draw.textsize(custom_text, font=font)
-    text_position = ((wallpaper.width - text_width) // 2, 50)
-    draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
+    if custom_text:
+        font = ImageFont.truetype("arial.ttf", 48)
+        text_width, text_height = draw.textsize(custom_text, font=font)
+        text_position = ((wallpaper.width - text_width) // 2, 50)
+        draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
 
     # Add stickers
     for sticker in stickers:
