@@ -1,3 +1,4 @@
+import logging
 from flask import Flask, render_template
 from config import Config
 from extensions import db, login_manager
@@ -8,6 +9,15 @@ from wallpaper import wallpaper_bp
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # Configure logging
+    logging.basicConfig(level=logging.INFO)
+    app.logger.setLevel(logging.INFO)
+    file_handler = logging.FileHandler('app.log')
+    file_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
 
     db.init_app(app)
     login_manager.init_app(app)
