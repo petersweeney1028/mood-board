@@ -4,10 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const wallpaperPreview = document.getElementById('wallpaper-preview');
     const templateSelect = document.getElementById('template-select');
     const colorPalette = document.getElementById('color-palette');
+    const customText = document.getElementById('custom-text');
+    const filterSelect = document.getElementById('filter-select');
+    const stickerSelection = document.getElementById('sticker-selection');
     const regenerateBtn = document.getElementById('regenerate-btn');
     const downloadBtn = document.getElementById('download-btn');
 
     let contentData = null;
+    let selectedStickers = [];
 
     function showLoading() {
         loading.classList.remove('hidden');
@@ -27,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 contentData = data;
                 updateWallpaperPreview();
                 updateColorPalette();
+                updateStickerSelection();
                 hideLoading();
             })
             .catch(error => {
@@ -51,12 +56,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function updateStickerSelection() {
+        const stickers = ['🎵', '🎶', '🎸', '🎹', '🎤', '🎧', '💿', '🔊'];
+        stickerSelection.innerHTML = '';
+        stickers.forEach(sticker => {
+            const stickerElement = document.createElement('div');
+            stickerElement.className = 'text-3xl cursor-pointer hover:bg-gray-200 p-2 rounded';
+            stickerElement.textContent = sticker;
+            stickerElement.addEventListener('click', () => toggleSticker(sticker, stickerElement));
+            stickerSelection.appendChild(stickerElement);
+        });
+    }
+
+    function toggleSticker(sticker, element) {
+        if (selectedStickers.includes(sticker)) {
+            selectedStickers = selectedStickers.filter(s => s !== sticker);
+            element.classList.remove('bg-blue-200');
+        } else {
+            selectedStickers.push(sticker);
+            element.classList.add('bg-blue-200');
+        }
+    }
+
     function generateWallpaper() {
         const template = templateSelect.value;
+        const text = customText.value;
+        const filter = filterSelect.value;
         const data = {
             template: template,
             color_palette: contentData.color_palette,
-            spotify: contentData.spotify
+            spotify: contentData.spotify,
+            custom_text: text,
+            filter: filter,
+            stickers: selectedStickers
         };
 
         fetch('/api/generate_wallpaper', {
@@ -86,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     templateSelect.addEventListener('change', generateWallpaper);
+    customText.addEventListener('input', generateWallpaper);
+    filterSelect.addEventListener('change', generateWallpaper);
 
     // Initial content fetch
     fetchContent();

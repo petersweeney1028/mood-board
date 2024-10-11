@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, send_file
 from flask_login import login_required, current_user
 import requests
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import random
 from color_analysis import get_color_palette
 
@@ -34,8 +34,11 @@ def generate_wallpaper():
     template = data['template']
     color_palette = data['color_palette']
     spotify_albums = data['spotify']
+    custom_text = data['custom_text']
+    filter_type = data['filter']
+    stickers = data['stickers']
     
-    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums)
+    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers)
     
     img_io = BytesIO()
     wallpaper.save(img_io, 'PNG')
@@ -56,7 +59,7 @@ def select_template(color_palette):
     templates = ['template1.svg', 'template2.svg', 'template3.svg']
     return random.choice(templates)
 
-def create_wallpaper_image(template, color_palette, spotify_albums):
+def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers):
     wallpaper = Image.new('RGB', (1242, 2688))  # iPhone 12 Pro Max resolution
     draw = ImageDraw.Draw(wallpaper)
 
@@ -77,7 +80,38 @@ def create_wallpaper_image(template, color_palette, spotify_albums):
             img = img.resize((pos[2] - pos[0], pos[3] - pos[1]), Image.LANCZOS)
             wallpaper.paste(img, pos)
 
-    font = ImageFont.load_default()
-    draw.text((wallpaper.size[0] // 2, 50), "My Spotify Moodboard", fill=tuple(color_palette[1]), font=font, anchor="mm")
+    # Apply filter
+    if filter_type == 'grayscale':
+        wallpaper = wallpaper.convert('L').convert('RGB')
+    elif filter_type == 'sepia':
+        wallpaper = apply_sepia(wallpaper)
+    elif filter_type == 'blur':
+        wallpaper = wallpaper.filter(ImageFilter.GaussianBlur(radius=5))
+
+    # Add custom text
+    font = ImageFont.truetype("arial.ttf", 48)
+    text_width, text_height = draw.textsize(custom_text, font=font)
+    text_position = ((wallpaper.width - text_width) // 2, 50)
+    draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
+
+    # Add stickers
+    for i, sticker in enumerate(stickers):
+        sticker_font = ImageFont.truetype("arial.ttf", 72)
+        sticker_width, sticker_height = draw.textsize(sticker, font=sticker_font)
+        x = random.randint(0, wallpaper.width - sticker_width)
+        y = random.randint(0, wallpaper.height - sticker_height)
+        draw.text((x, y), sticker, fill=tuple(color_palette[2 % len(color_palette)]), font=sticker_font)
 
     return wallpaper
+
+def apply_sepia(image):
+    width, height = image.size
+    pixels = image.load()
+    for py in range(height):
+        for px in range(width):
+            r, g, b = image.getpixel((px, py))
+            tr = int(0.393 * r + 0.769 * g + 0.189 * b)
+            tg = int(0.349 * r + 0.686 * g + 0.168 * b)
+            tb = int(0.272 * r + 0.534 * g + 0.131 * b)
+            pixels[px, py] = (min(tr, 255), min(tg, 255), min(tb, 255))
+    return image
