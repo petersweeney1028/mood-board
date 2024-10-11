@@ -33,6 +33,11 @@ def create_app():
     def index():
         return render_template('index.html')
 
+    with app.app_context():
+        app.logger.info(f"SPOTIFY_REDIRECT_URI: {Config.SPOTIFY_REDIRECT_URI}")
+        app.logger.info(f"SPOTIFY_CLIENT_ID is set: {'Yes' if Config.SPOTIFY_CLIENT_ID else 'No'}")
+        app.logger.info(f"SPOTIFY_CLIENT_SECRET is set: {'Yes' if Config.SPOTIFY_CLIENT_SECRET else 'No'}")
+
     return app
 
 app = create_app()

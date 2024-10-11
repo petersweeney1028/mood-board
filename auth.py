@@ -99,7 +99,4 @@ def get_spotify_user_info(access_token):
         current_app.logger.error(f"Error fetching Spotify user info: {str(e)}")
         return None
 
-# Log environment variables (excluding sensitive information)
-current_app.logger.info(f"SPOTIFY_REDIRECT_URI: {Config.SPOTIFY_REDIRECT_URI}")
-current_app.logger.info(f"SPOTIFY_CLIENT_ID is set: {'Yes' if Config.SPOTIFY_CLIENT_ID else 'No'}")
-current_app.logger.info(f"SPOTIFY_CLIENT_SECRET is set: {'Yes' if Config.SPOTIFY_CLIENT_SECRET else 'No'}")
+# Removed problematic logging lines
