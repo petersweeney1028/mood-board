@@ -41,8 +41,9 @@ def generate_wallpaper():
     sticker_size = data['sticker_size']
     sticker_rotation = data.get('sticker_rotation', 0)
     sticker_opacity = data.get('sticker_opacity', 255)
+    text_size = data.get('text_size', 48)  # New parameter for text size
     
-    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity)
+    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity, text_size)
     
     img_io = BytesIO()
     wallpaper.save(img_io, 'PNG')
@@ -63,7 +64,7 @@ def select_template(color_palette):
     templates = ['template1.svg', 'template2.svg', 'template3.svg']
     return random.choice(templates)
 
-def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity):
+def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity, text_size):
     wallpaper = Image.new('RGB', (1242, 2688))  # iPhone 12 Pro Max resolution
     draw = ImageDraw.Draw(wallpaper)
 
@@ -99,30 +100,46 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
     elif filter_type == 'vignette':
         wallpaper = apply_vignette(wallpaper)
 
-    # Add custom text
+    # Add custom text with adjustable size
     if custom_text:
-        font = ImageFont.truetype("arial.ttf", 48)
+        font = ImageFont.truetype("arial.ttf", text_size)
         text_width, text_height = draw.textsize(custom_text, font=font)
         text_position = ((wallpaper.width - text_width) // 2, 50)
         draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
 
-    # Add stickers with rotation and opacity
+    # Add stickers with improved placement, rotation, and opacity
     for sticker in stickers:
         sticker_font = ImageFont.truetype("arial.ttf", sticker_size)
         sticker_width, sticker_height = draw.textsize(sticker, font=sticker_font)
-        x = random.randint(0, wallpaper.width - sticker_width)
-        y = random.randint(0, wallpaper.height - sticker_height)
         
-        # Create a new image for the rotated sticker
-        sticker_img = Image.new('RGBA', (sticker_width, sticker_height), (0, 0, 0, 0))
-        sticker_draw = ImageDraw.Draw(sticker_img)
-        sticker_draw.text((0, 0), sticker, fill=tuple(color_palette[2 % len(color_palette)] + (sticker_opacity,)), font=sticker_font)
+        # Improve sticker placement to avoid overlap with album covers
+        valid_placement = False
+        max_attempts = 50
+        attempts = 0
         
-        # Rotate the sticker
-        rotated_sticker = sticker_img.rotate(sticker_rotation, expand=True, resample=Image.BICUBIC)
+        while not valid_placement and attempts < max_attempts:
+            x = random.randint(0, wallpaper.width - sticker_width)
+            y = random.randint(0, wallpaper.height - sticker_height)
+            
+            # Check if the sticker overlaps with any album cover
+            overlap = any(pos[0] < x < pos[2] and pos[1] < y < pos[3] for pos in positions)
+            
+            if not overlap:
+                valid_placement = True
+            
+            attempts += 1
         
-        # Paste the rotated sticker onto the wallpaper
-        wallpaper.paste(rotated_sticker, (x, y), rotated_sticker)
+        if valid_placement:
+            # Create a new image for the rotated sticker
+            sticker_img = Image.new('RGBA', (sticker_width, sticker_height), (0, 0, 0, 0))
+            sticker_draw = ImageDraw.Draw(sticker_img)
+            sticker_draw.text((0, 0), sticker, fill=tuple(color_palette[2 % len(color_palette)] + (sticker_opacity,)), font=sticker_font)
+            
+            # Rotate the sticker
+            rotated_sticker = sticker_img.rotate(sticker_rotation, expand=True, resample=Image.BICUBIC)
+            
+            # Paste the rotated sticker onto the wallpaper
+            wallpaper.paste(rotated_sticker, (x, y), rotated_sticker)
 
     return wallpaper
 

@@ -44,6 +44,13 @@
                     <input type="text" id="custom-text" class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter custom text">
                 </div>
                 <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="text-size">
+                        Text Size
+                    </label>
+                    <input type="range" id="text-size" min="24" max="72" value="48" class="w-full">
+                    <span id="text-size-value">48px</span>
+                </div>
+                <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="filter-select">
                         Filter
                     </label>
@@ -69,18 +76,21 @@
                         Sticker Size
                     </label>
                     <input type="range" id="sticker-size" min="32" max="128" value="72" class="w-full">
+                    <span id="sticker-size-value">72px</span>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="sticker-rotation">
                         Sticker Rotation
                     </label>
                     <input type="range" id="sticker-rotation" min="0" max="360" value="0" class="w-full">
+                    <span id="sticker-rotation-value">0°</span>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="sticker-opacity">
                         Sticker Opacity
                     </label>
                     <input type="range" id="sticker-opacity" min="0" max="255" value="255" class="w-full">
+                    <span id="sticker-opacity-value">100%</span>
                 </div>
                 <button id="regenerate-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Regenerate
