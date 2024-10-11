@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const templateSelect = document.getElementById('template-select');
     const colorPalette = document.getElementById('color-palette');
     const customText = document.getElementById('custom-text');
+    const textColor = document.getElementById('text-color');
+    const textPosition = document.getElementById('text-position');
+    const textSize = document.getElementById('text-size');
     const filterSelect = document.getElementById('filter-select');
     const stickerSelection = document.getElementById('sticker-selection');
     const stickerSize = document.getElementById('sticker-size');
@@ -88,6 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const size = stickerSize.value;
         const rotation = stickerRotation.value;
         const opacity = stickerOpacity.value;
+        const textColorValue = textColor.value;
+        const textPositionValue = textPosition.value;
+        const textSizeValue = textSize.value;
+
         const data = {
             template: template,
             color_palette: contentData.color_palette,
@@ -97,7 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
             stickers: selectedStickers,
             sticker_size: parseInt(size),
             sticker_rotation: parseInt(rotation),
-            sticker_opacity: parseInt(opacity)
+            sticker_opacity: parseInt(opacity),
+            text_color: hexToRgb(textColorValue),
+            text_position: textPositionValue,
+            text_size: parseInt(textSizeValue)
         };
 
         fetch('/api/generate_wallpaper', {
@@ -117,6 +127,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [
+            parseInt(result[1], 16),
+            parseInt(result[2], 16),
+            parseInt(result[3], 16)
+        ] : null;
+    }
+
     regenerateBtn.addEventListener('click', generateWallpaper);
 
     downloadBtn.addEventListener('click', () => {
@@ -128,6 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     templateSelect.addEventListener('change', generateWallpaper);
     customText.addEventListener('input', generateWallpaper);
+    textColor.addEventListener('change', generateWallpaper);
+    textPosition.addEventListener('change', generateWallpaper);
+    textSize.addEventListener('input', generateWallpaper);
     filterSelect.addEventListener('change', generateWallpaper);
     stickerSize.addEventListener('input', generateWallpaper);
     stickerRotation.addEventListener('input', generateWallpaper);
