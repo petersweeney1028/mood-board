@@ -1,35 +1,31 @@
-from flask import Flask, render_template, redirect, url_for
-from flask_login import LoginManager, current_user
+from flask import Flask, render_template
 from config import Config
-from models import db, User
+from extensions import db, login_manager
+from models import User
 from auth import auth_bp
 from wallpaper import wallpaper_bp
 
-app = Flask(__name__)
-app.config.from_object(Config)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-db.init_app(app)
+    db.init_app(app)
+    login_manager.init_app(app)
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'auth.auth_instagram'
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(wallpaper_bp)
 
-app.register_blueprint(auth_bp)
-app.register_blueprint(wallpaper_bp)
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-@app.route('/')
-def index():
-    if not current_user.is_authenticated:
+    @app.route('/')
+    def index():
         return render_template('index.html')
-    elif not current_user.instagram_token:
-        return redirect(url_for('auth.auth_instagram'))
-    elif not current_user.spotify_token:
-        return redirect(url_for('auth.connect_spotify'))
-    return render_template('index.html')
+
+    return app
+
+app = create_app()
 
 if __name__ == '__main__':
     with app.app_context():

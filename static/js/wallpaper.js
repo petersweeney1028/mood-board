@@ -36,8 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateWallpaperPreview() {
-        // In a real implementation, this would create and display the wallpaper preview
-        // For now, we'll just show a placeholder
         wallpaperPreview.innerHTML = `<div class="bg-gray-200 w-full h-full flex items-center justify-center">
             <p class="text-gray-600">Wallpaper Preview</p>
         </div>`;
@@ -58,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = {
             template: template,
             color_palette: contentData.color_palette,
-            instagram: contentData.instagram,
             spotify: contentData.spotify
         };
 
@@ -84,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadBtn.addEventListener('click', () => {
         const link = document.createElement('a');
         link.href = wallpaperPreview.querySelector('img').src;
-        link.download = 'moodboard_wallpaper.png';
+        link.download = 'spotify_moodboard_wallpaper.png';
         link.click();
     });
 

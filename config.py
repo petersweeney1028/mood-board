@@ -5,12 +5,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # Instagram API credentials (you need to set these up)
-    INSTAGRAM_CLIENT_ID = 'your_instagram_client_id'
-    INSTAGRAM_CLIENT_SECRET = 'your_instagram_client_secret'
-    INSTAGRAM_REDIRECT_URI = 'http://localhost:5000/auth/instagram/callback'
-    
-    # Spotify API credentials (you need to set these up)
-    SPOTIFY_CLIENT_ID = 'your_spotify_client_id'
-    SPOTIFY_CLIENT_SECRET = 'your_spotify_client_secret'
-    SPOTIFY_REDIRECT_URI = 'http://localhost:5000/auth/spotify/callback'
+    # Spotify API credentials
+    SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID')
+    SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
+    SPOTIFY_REDIRECT_URI = f"https://{os.environ.get('REPL_SLUG')}.{os.environ.get('REPL_OWNER')}.repl.co/auth/spotify/callback"
