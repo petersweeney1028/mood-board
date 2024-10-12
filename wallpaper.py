@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, send_file, curre
 from flask_login import login_required, current_user
 import requests
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageOps
 import random
 from color_analysis import get_color_palette
 import math
@@ -104,16 +104,7 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
             img = img.resize((pos[2] - pos[0], pos[3] - pos[1]), Image.Resampling.LANCZOS)
             wallpaper.paste(img, pos)
 
-    if filter_type == 'grayscale':
-        wallpaper = wallpaper.convert('L').convert('RGB')
-    elif filter_type == 'sepia':
-        wallpaper = apply_sepia(wallpaper)
-    elif filter_type == 'blur':
-        wallpaper = wallpaper.filter(ImageFilter.GaussianBlur(radius=5))
-    elif filter_type == 'vintage':
-        wallpaper = apply_vintage(wallpaper)
-    elif filter_type == 'vignette':
-        wallpaper = apply_vignette(wallpaper)
+    wallpaper = apply_filter(wallpaper, filter_type)
 
     if custom_text:
         font = ImageFont.truetype("arial.ttf", text_size)
@@ -123,38 +114,31 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
         text_position = ((wallpaper.width - text_width) // 2, 50)
         draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
 
-    for sticker in stickers:
-        sticker_font = ImageFont.truetype("arial.ttf", sticker_size)
-        left, top, right, bottom = sticker_font.getbbox(sticker)
-        sticker_width = right - left
-        sticker_height = int((bottom - top) * 1.2)
-        
-        valid_placement = False
-        max_attempts = 50
-        attempts = 0
-        x, y = 0, 0
-        
-        while not valid_placement and attempts < max_attempts:
-            x = random.randint(0, wallpaper.width - sticker_width)
-            y = random.randint(0, wallpaper.height - sticker_height)
-            
-            overlap = any(pos[0] < x < pos[2] and pos[1] < y < pos[3] for pos in positions)
-            
-            if not overlap:
-                valid_placement = True
-            
-            attempts += 1
-        
-        if valid_placement:
-            sticker_img = Image.new('RGBA', (sticker_width, sticker_height), (0, 0, 0, 0))
-            sticker_draw = ImageDraw.Draw(sticker_img)
-            sticker_draw.text((0, 0), sticker, fill=tuple(color_palette[2 % len(color_palette)] + (sticker_opacity,)), font=sticker_font)
-            
-            rotated_sticker = sticker_img.rotate(sticker_rotation, expand=True, resample=Image.Resampling.BICUBIC)
-            
-            wallpaper.paste(rotated_sticker, (x, y), rotated_sticker)
+    place_stickers(wallpaper, stickers, color_palette, positions, sticker_size, sticker_rotation, sticker_opacity)
 
     return wallpaper
+
+def apply_filter(image, filter_type):
+    if filter_type == 'grayscale':
+        return ImageOps.grayscale(image).convert('RGB')
+    elif filter_type == 'sepia':
+        return apply_sepia(image)
+    elif filter_type == 'blur':
+        return image.filter(ImageFilter.GaussianBlur(radius=5))
+    elif filter_type == 'vintage':
+        return apply_vintage(image)
+    elif filter_type == 'vignette':
+        return apply_vignette(image)
+    elif filter_type == 'edge_enhance':
+        return image.filter(ImageFilter.EDGE_ENHANCE)
+    elif filter_type == 'emboss':
+        return image.filter(ImageFilter.EMBOSS)
+    elif filter_type == 'sharpen':
+        return image.filter(ImageFilter.SHARPEN)
+    elif filter_type == 'color_swap':
+        return apply_color_swap(image)
+    else:
+        return image
 
 def apply_sepia(image):
     width, height = image.size
@@ -182,3 +166,48 @@ def apply_vignette(image):
         draw.rectangle(box, fill=255 - i * 10)
     blurred_mask = mask.filter(ImageFilter.GaussianBlur(radius=10))
     return Image.composite(image, Image.new('RGB', (width, height), (0, 0, 0)), blurred_mask)
+
+def apply_color_swap(image):
+    r, g, b = image.split()
+    return Image.merge("RGB", (b, r, g))
+
+def place_stickers(wallpaper, stickers, color_palette, positions, sticker_size, sticker_rotation, sticker_opacity):
+    width, height = wallpaper.size
+    grid_size = 100
+    grid = [[False for _ in range(height // grid_size + 1)] for _ in range(width // grid_size + 1)]
+
+    for pos in positions:
+        for x in range(pos[0] // grid_size, pos[2] // grid_size + 1):
+            for y in range(pos[1] // grid_size, pos[3] // grid_size + 1):
+                if x < len(grid) and y < len(grid[0]):
+                    grid[x][y] = True
+
+    for sticker in stickers:
+        sticker_font = ImageFont.truetype("arial.ttf", sticker_size)
+        left, top, right, bottom = sticker_font.getbbox(sticker)
+        sticker_width = right - left
+        sticker_height = int((bottom - top) * 1.2)
+        
+        valid_placement = False
+        max_attempts = 50
+        attempts = 0
+        
+        while not valid_placement and attempts < max_attempts:
+            x = random.randint(0, width - sticker_width)
+            y = random.randint(0, height - sticker_height)
+            
+            grid_x, grid_y = x // grid_size, y // grid_size
+            if not grid[grid_x][grid_y]:
+                valid_placement = True
+                grid[grid_x][grid_y] = True
+            
+            attempts += 1
+        
+        if valid_placement:
+            sticker_img = Image.new('RGBA', (sticker_width, sticker_height), (0, 0, 0, 0))
+            sticker_draw = ImageDraw.Draw(sticker_img)
+            sticker_draw.text((0, 0), sticker, fill=tuple(color_palette[2 % len(color_palette)] + (sticker_opacity,)), font=sticker_font)
+            
+            rotated_sticker = sticker_img.rotate(sticker_rotation, expand=True, resample=Image.Resampling.BICUBIC)
+            
+            wallpaper.paste(rotated_sticker, (x, y), rotated_sticker)
