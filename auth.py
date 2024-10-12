@@ -11,6 +11,8 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login')
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     current_app.logger.info("User initiated login process")
     return redirect(url_for('auth.auth_spotify'))
 
@@ -98,5 +100,3 @@ def get_spotify_user_info(access_token):
     except requests.exceptions.RequestException as e:
         current_app.logger.error(f"Error fetching Spotify user info: {str(e)}")
         return None
-
-# Removed problematic logging lines

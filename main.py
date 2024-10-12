@@ -1,5 +1,6 @@
 import logging
 from flask import Flask, render_template
+from flask_login import current_user
 from config import Config
 from extensions import db, login_manager
 from models import User
@@ -32,7 +33,8 @@ def create_app():
 
     @app.route('/')
     def index():
-        return render_template('index.html')
+        app.logger.info("Rendering index page")
+        return render_template('index.html', user=current_user)
 
     with app.app_context():
         app.logger.info(f"SPOTIFY_REDIRECT_URI: {Config.SPOTIFY_REDIRECT_URI}")

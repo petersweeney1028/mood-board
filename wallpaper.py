@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, send_file
+from flask import Blueprint, render_template, jsonify, request, send_file, current_app
 from flask_login import login_required, current_user
 import requests
 from io import BytesIO
@@ -12,16 +12,19 @@ wallpaper_bp = Blueprint('wallpaper', __name__)
 @wallpaper_bp.route('/create')
 @login_required
 def create_wallpaper():
+    current_app.logger.info(f"User {current_user.id} accessed wallpaper creation page")
     return render_template('create_wallpaper.html')
 
 @wallpaper_bp.route('/api/fetch_content')
 @login_required
 def fetch_content():
+    current_app.logger.info(f"Fetching content for user {current_user.id}")
     spotify_albums = fetch_spotify_albums(current_user.spotify_token)
     
     color_palette = get_color_palette([img['url'] for img in spotify_albums])
     template = select_template(color_palette)
     
+    current_app.logger.info(f"Content fetched successfully for user {current_user.id}")
     return jsonify({
         'spotify': spotify_albums,
         'color_palette': color_palette,
@@ -31,25 +34,41 @@ def fetch_content():
 @wallpaper_bp.route('/api/generate_wallpaper', methods=['POST'])
 @login_required
 def generate_wallpaper():
+    current_app.logger.info(f"Generating wallpaper for user {current_user.id}")
     data = request.json
-    template = data['template']
-    color_palette = data['color_palette']
-    spotify_albums = data['spotify']
-    custom_text = data['custom_text']
+    if not data:
+        current_app.logger.error("No data received for wallpaper generation")
+        return jsonify({"error": "No data provided"}), 400
+
+    template = data.get('template')
+    color_palette = data.get('color_palette')
+    spotify_albums = data.get('spotify')
+    custom_text = data.get('custom_text', '')
     text_size = data.get('text_size', 48)
-    filter_type = data['filter']
-    stickers = data['stickers']
-    sticker_size = data['sticker_size']
+    filter_type = data.get('filter', 'none')
+    stickers = data.get('stickers', [])
+    sticker_size = data.get('sticker_size', 72)
     sticker_rotation = data.get('sticker_rotation', 0)
     sticker_opacity = data.get('sticker_opacity', 255)
     
-    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, text_size, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity)
+    if not all([template, color_palette, spotify_albums]):
+        current_app.logger.error("Missing required data for wallpaper generation")
+        return jsonify({"error": "Missing required data"}), 400
+
+    current_app.logger.info(f"Wallpaper options: template={template}, filter={filter_type}, text_size={text_size}, sticker_count={len(stickers)}")
     
-    img_io = BytesIO()
-    wallpaper.save(img_io, 'PNG')
-    img_io.seek(0)
-    
-    return send_file(img_io, mimetype='image/png')
+    try:
+        wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, text_size, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity)
+        
+        img_io = BytesIO()
+        wallpaper.save(img_io, 'PNG')
+        img_io.seek(0)
+        
+        current_app.logger.info(f"Wallpaper generated successfully for user {current_user.id}")
+        return send_file(img_io, mimetype='image/png')
+    except Exception as e:
+        current_app.logger.error(f"Error generating wallpaper: {str(e)}")
+        return jsonify({"error": "Failed to generate wallpaper"}), 500
 
 def fetch_spotify_albums(access_token):
     url = "https://api.spotify.com/v1/me/top/tracks"
@@ -68,10 +87,8 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
     wallpaper = Image.new('RGB', (1242, 2688))  # iPhone 12 Pro Max resolution
     draw = ImageDraw.Draw(wallpaper)
 
-    # Set background color
-    wallpaper.paste(tuple(color_palette[0]), [0, 0, wallpaper.width, wallpaper.height])
+    wallpaper.paste(tuple(color_palette[0]), (0, 0, wallpaper.width, wallpaper.height))
 
-    # Apply template
     if template == 'template1.svg':
         positions = [(62, 134, 1180, 1252), (62, 1436, 1180, 2554)]
     elif template == 'template2.svg':
@@ -79,16 +96,14 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
     else:  # template3.svg
         positions = [(62, 134, 621, 1252), (621, 134, 1180, 1252), (62, 1436, 1180, 2554)]
 
-    # Place album covers
     for i, pos in enumerate(positions):
         if i < len(spotify_albums):
             img_url = spotify_albums[i]['url']
             response = requests.get(img_url)
             img = Image.open(BytesIO(response.content))
-            img = img.resize((pos[2] - pos[0], pos[3] - pos[1]), Image.LANCZOS)
+            img = img.resize((pos[2] - pos[0], pos[3] - pos[1]), Image.Resampling.LANCZOS)
             wallpaper.paste(img, pos)
 
-    # Apply filter
     if filter_type == 'grayscale':
         wallpaper = wallpaper.convert('L').convert('RGB')
     elif filter_type == 'sepia':
@@ -100,29 +115,29 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
     elif filter_type == 'vignette':
         wallpaper = apply_vignette(wallpaper)
 
-    # Add custom text with adjustable size
     if custom_text:
         font = ImageFont.truetype("arial.ttf", text_size)
-        text_width, text_height = draw.textsize(custom_text, font=font)
+        left, top, right, bottom = font.getbbox(custom_text)
+        text_width = right - left
+        text_height = bottom - top
         text_position = ((wallpaper.width - text_width) // 2, 50)
         draw.text(text_position, custom_text, fill=tuple(color_palette[1]), font=font)
 
-    # Add stickers with improved placement, rotation, and opacity
     for sticker in stickers:
         sticker_font = ImageFont.truetype("arial.ttf", sticker_size)
-        sticker_width, text_height = draw.textsize(sticker, font=sticker_font)
-        sticker_height = int(text_height * 1.2)  # Add some padding
+        left, top, right, bottom = sticker_font.getbbox(sticker)
+        sticker_width = right - left
+        sticker_height = int((bottom - top) * 1.2)
         
-        # Improve sticker placement to avoid overlap with album covers
         valid_placement = False
         max_attempts = 50
         attempts = 0
+        x, y = 0, 0
         
         while not valid_placement and attempts < max_attempts:
             x = random.randint(0, wallpaper.width - sticker_width)
             y = random.randint(0, wallpaper.height - sticker_height)
             
-            # Check if the sticker overlaps with any album cover
             overlap = any(pos[0] < x < pos[2] and pos[1] < y < pos[3] for pos in positions)
             
             if not overlap:
@@ -131,15 +146,12 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
             attempts += 1
         
         if valid_placement:
-            # Create a new image for the rotated sticker
             sticker_img = Image.new('RGBA', (sticker_width, sticker_height), (0, 0, 0, 0))
             sticker_draw = ImageDraw.Draw(sticker_img)
             sticker_draw.text((0, 0), sticker, fill=tuple(color_palette[2 % len(color_palette)] + (sticker_opacity,)), font=sticker_font)
             
-            # Rotate the sticker
-            rotated_sticker = sticker_img.rotate(sticker_rotation, expand=True, resample=Image.BICUBIC)
+            rotated_sticker = sticker_img.rotate(sticker_rotation, expand=True, resample=Image.Resampling.BICUBIC)
             
-            # Paste the rotated sticker onto the wallpaper
             wallpaper.paste(rotated_sticker, (x, y), rotated_sticker)
 
     return wallpaper
