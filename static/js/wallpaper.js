@@ -2,24 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const loading = document.getElementById('loading');
     const wallpaperCreator = document.getElementById('wallpaper-creator');
     const wallpaperPreview = document.getElementById('wallpaper-preview');
-    const templateSelect = document.getElementById('template-select');
-    const colorPalette = document.getElementById('color-palette');
     const customText = document.getElementById('custom-text');
+    const fontSelect = document.getElementById('font-select');
     const textSize = document.getElementById('text-size');
     const textSizeValue = document.getElementById('text-size-value');
+    const textColor = document.getElementById('text-color');
     const filterSelect = document.getElementById('filter-select');
     const stickerSelection = document.getElementById('sticker-selection');
-    const stickerSize = document.getElementById('sticker-size');
-    const stickerSizeValue = document.getElementById('sticker-size-value');
-    const stickerRotation = document.getElementById('sticker-rotation');
-    const stickerRotationValue = document.getElementById('sticker-rotation-value');
-    const stickerOpacity = document.getElementById('sticker-opacity');
-    const stickerOpacityValue = document.getElementById('sticker-opacity-value');
-    const albumOpacity = document.getElementById('album-opacity');
-    const albumOpacityValue = document.getElementById('album-opacity-value');
-    const borderWidth = document.getElementById('border-width');
-    const borderWidthValue = document.getElementById('border-width-value');
-    const borderColor = document.getElementById('border-color');
     const regenerateBtn = document.getElementById('regenerate-btn');
     const downloadBtn = document.getElementById('download-btn');
 
@@ -43,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 contentData = data;
                 updateWallpaperPreview();
-                updateColorPalette();
                 updateStickerSelection();
                 hideLoading();
             })
@@ -57,16 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         wallpaperPreview.innerHTML = `<div class="bg-gray-200 w-full h-full flex items-center justify-center">
             <p class="text-gray-600">Wallpaper Preview</p>
         </div>`;
-    }
-
-    function updateColorPalette() {
-        colorPalette.innerHTML = '';
-        contentData.color_palette.forEach(color => {
-            const swatch = document.createElement('div');
-            swatch.className = 'w-8 h-8 rounded-full';
-            swatch.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-            colorPalette.appendChild(swatch);
-        });
     }
 
     function updateStickerSelection() {
@@ -92,31 +70,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generateWallpaper() {
-        const template = templateSelect.value;
         const text = customText.value;
+        const font = fontSelect.value;
         const textSizeValue = textSize.value;
+        const textColorValue = textColor.value;
         const filter = filterSelect.value;
-        const size = stickerSize.value;
-        const rotation = stickerRotation.value;
-        const opacity = stickerOpacity.value;
-        const albumOpacityValue = albumOpacity.value;
-        const borderWidthValue = borderWidth.value;
-        const borderColorValue = borderColor.value;
-        
+
         const data = {
-            template: template,
             color_palette: contentData.color_palette,
             spotify: contentData.spotify,
             custom_text: text,
+            font: font,
             text_size: parseInt(textSizeValue),
+            text_color: textColorValue,
             filter: filter,
-            stickers: selectedStickers,
-            sticker_size: parseInt(size),
-            sticker_rotation: parseInt(rotation),
-            sticker_opacity: parseInt(opacity),
-            album_opacity: parseInt(albumOpacityValue),
-            border_width: parseInt(borderWidthValue),
-            border_color: borderColorValue
+            stickers: selectedStickers
         };
 
         fetch('/api/generate_wallpaper', {
@@ -145,37 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
         link.click();
     });
 
-    templateSelect.addEventListener('change', generateWallpaper);
     customText.addEventListener('input', generateWallpaper);
+    fontSelect.addEventListener('change', generateWallpaper);
     textSize.addEventListener('input', () => {
         textSizeValue.textContent = `${textSize.value}px`;
         generateWallpaper();
     });
+    textColor.addEventListener('input', generateWallpaper);
     filterSelect.addEventListener('change', generateWallpaper);
-    stickerSize.addEventListener('input', () => {
-        stickerSizeValue.textContent = `${stickerSize.value}px`;
-        generateWallpaper();
-    });
-    stickerRotation.addEventListener('input', () => {
-        stickerRotationValue.textContent = `${stickerRotation.value}°`;
-        generateWallpaper();
-    });
-    stickerOpacity.addEventListener('input', () => {
-        const opacityPercentage = Math.round((stickerOpacity.value / 255) * 100);
-        stickerOpacityValue.textContent = `${opacityPercentage}%`;
-        generateWallpaper();
-    });
-    albumOpacity.addEventListener('input', () => {
-        const opacityPercentage = Math.round((albumOpacity.value / 255) * 100);
-        albumOpacityValue.textContent = `${opacityPercentage}%`;
-        generateWallpaper();
-    });
-    borderWidth.addEventListener('input', () => {
-        borderWidthValue.textContent = `${borderWidth.value}px`;
-        generateWallpaper();
-    });
-    borderColor.addEventListener('input', generateWallpaper);
 
-    // Initial content fetch
     fetchContent();
 });

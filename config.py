@@ -9,8 +9,10 @@ class Config:
     SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID')
     SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
     
-    # Use an environment variable for the base URL
-    BASE_URL = os.environ.get('BASE_URL', 'http://localhost:5000')
-    SPOTIFY_REDIRECT_URI = f"{BASE_URL}/auth/spotify/callback"
+    # Updated Spotify Redirect URI
+    SPOTIFY_REDIRECT_URI = "http://student-hub-petersweeney102.replit.app/auth/spotify/callback"
 
 print(f'Spotify Redirect URI: {Config.SPOTIFY_REDIRECT_URI}')
+
+# Reminder for the user
+print("IMPORTANT: Please update this new URL in your Spotify Developer Dashboard.")

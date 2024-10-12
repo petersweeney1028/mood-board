@@ -20,51 +20,44 @@
             <div>
                 <h2 class="text-2xl font-semibold mb-4">Customization</h2>
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="template-select">
-                        Template
-                    </label>
-                    <select id="template-select" class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="template1">Template 1</option>
-                        <option value="template2">Template 2</option>
-                        <option value="template3">Template 3</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">
-                        Color Palette
-                    </label>
-                    <div id="color-palette" class="flex space-x-2">
-                        <!-- Color swatches will be inserted here -->
-                    </div>
-                </div>
-                <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="custom-text">
                         Custom Text
                     </label>
-                    <input type="text" id="custom-text" class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter custom text">
+                    <input type="text" id="custom-text" class="w-full px-3 py-2 border rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="font-select">
+                        Font
+                    </label>
+                    <select id="font-select" class="w-full px-3 py-2 border rounded-lg">
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Courier">Courier</option>
+                    </select>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="text-size">
                         Text Size
                     </label>
-                    <input type="range" id="text-size" min="24" max="72" value="48" class="w-full">
-                    <span id="text-size-value">48px</span>
+                    <input type="range" id="text-size" min="12" max="72" value="24" class="w-full">
+                    <span id="text-size-value">24px</span>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="text-color">
+                        Text Color
+                    </label>
+                    <input type="color" id="text-color" value="#FFFFFF" class="w-full">
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="filter-select">
                         Filter
                     </label>
-                    <select id="filter-select" class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
+                    <select id="filter-select" class="w-full px-3 py-2 border rounded-lg">
                         <option value="none">None</option>
                         <option value="grayscale">Grayscale</option>
                         <option value="sepia">Sepia</option>
                         <option value="blur">Blur</option>
-                        <option value="vintage">Vintage</option>
-                        <option value="vignette">Vignette</option>
-                        <option value="edge_enhance">Edge Enhance</option>
-                        <option value="emboss">Emboss</option>
-                        <option value="sharpen">Sharpen</option>
-                        <option value="color_swap">Color Swap</option>
                     </select>
                 </div>
                 <div class="mb-4">
@@ -74,48 +67,6 @@
                     <div id="sticker-selection" class="grid grid-cols-4 gap-2">
                         <!-- Sticker options will be inserted here -->
                     </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="sticker-size">
-                        Sticker Size
-                    </label>
-                    <input type="range" id="sticker-size" min="32" max="128" value="72" class="w-full">
-                    <span id="sticker-size-value">72px</span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="sticker-rotation">
-                        Sticker Rotation
-                    </label>
-                    <input type="range" id="sticker-rotation" min="0" max="360" value="0" class="w-full">
-                    <span id="sticker-rotation-value">0°</span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="sticker-opacity">
-                        Sticker Opacity
-                    </label>
-                    <input type="range" id="sticker-opacity" min="0" max="255" value="255" class="w-full">
-                    <span id="sticker-opacity-value">100%</span>
-                </div>
-                <!-- New options for album cover opacity and border -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="album-opacity">
-                        Album Cover Opacity
-                    </label>
-                    <input type="range" id="album-opacity" min="0" max="255" value="255" class="w-full">
-                    <span id="album-opacity-value">100%</span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="border-width">
-                        Border Width
-                    </label>
-                    <input type="range" id="border-width" min="0" max="20" value="0" class="w-full">
-                    <span id="border-width-value">0px</span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="border-color">
-                        Border Color
-                    </label>
-                    <input type="color" id="border-color" value="#000000" class="w-full h-10">
                 </div>
                 <button id="regenerate-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Regenerate

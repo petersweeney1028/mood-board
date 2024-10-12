@@ -116,3 +116,6 @@
 2024-10-12 01:26:56,918 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
 2024-10-12 01:30:47,643 - main - INFO - User initiated login process
 2024-10-12 01:30:47,649 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
+2024-10-12 01:31:10,918 - main - INFO - Rendering index page
+2024-10-12 01:31:12,338 - main - INFO - User initiated login process
+2024-10-12 01:31:12,412 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
