@@ -36,14 +36,14 @@ def generate_wallpaper():
     color_palette = data['color_palette']
     spotify_albums = data['spotify']
     custom_text = data['custom_text']
+    text_size = data.get('text_size', 48)
     filter_type = data['filter']
     stickers = data['stickers']
     sticker_size = data['sticker_size']
     sticker_rotation = data.get('sticker_rotation', 0)
     sticker_opacity = data.get('sticker_opacity', 255)
-    text_size = data.get('text_size', 48)  # New parameter for text size
     
-    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity, text_size)
+    wallpaper = create_wallpaper_image(template, color_palette, spotify_albums, custom_text, text_size, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity)
     
     img_io = BytesIO()
     wallpaper.save(img_io, 'PNG')
@@ -64,12 +64,12 @@ def select_template(color_palette):
     templates = ['template1.svg', 'template2.svg', 'template3.svg']
     return random.choice(templates)
 
-def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity, text_size):
+def create_wallpaper_image(template, color_palette, spotify_albums, custom_text, text_size, filter_type, stickers, sticker_size, sticker_rotation, sticker_opacity):
     wallpaper = Image.new('RGB', (1242, 2688))  # iPhone 12 Pro Max resolution
     draw = ImageDraw.Draw(wallpaper)
 
     # Set background color
-    wallpaper.paste(tuple(color_palette[0]), [0, 0, wallpaper.size[0], wallpaper.size[1]])
+    wallpaper.paste(tuple(color_palette[0]), [0, 0, wallpaper.width, wallpaper.height])
 
     # Apply template
     if template == 'template1.svg':
@@ -110,7 +110,8 @@ def create_wallpaper_image(template, color_palette, spotify_albums, custom_text,
     # Add stickers with improved placement, rotation, and opacity
     for sticker in stickers:
         sticker_font = ImageFont.truetype("arial.ttf", sticker_size)
-        sticker_width, sticker_height = draw.textsize(sticker, font=sticker_font)
+        sticker_width, text_height = draw.textsize(sticker, font=sticker_font)
+        sticker_height = int(text_height * 1.2)  # Add some padding
         
         # Improve sticker placement to avoid overlap with album covers
         valid_placement = False

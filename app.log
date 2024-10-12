@@ -67,3 +67,21 @@
 2024-10-11 02:25:19,270 - main - INFO - SPOTIFY_CLIENT_SECRET is set: Yes
 2024-10-11 02:25:21,936 - main - INFO - User initiated login process
 2024-10-11 02:25:21,943 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
+2024-10-11 02:25:36,270 - main - INFO - User initiated login process
+2024-10-11 02:25:36,349 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
+2024-10-11 02:25:45,373 - main - INFO - User initiated login process
+2024-10-11 02:25:45,453 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
+2024-10-12 00:50:30,940 - main - INFO - SPOTIFY_REDIRECT_URI: http://StudentHub.petersweeney102.repl.co/auth/spotify/callback
+2024-10-12 00:50:30,941 - main - INFO - SPOTIFY_CLIENT_ID is set: Yes
+2024-10-12 00:50:30,941 - main - INFO - SPOTIFY_CLIENT_SECRET is set: Yes
+2024-10-12 00:50:33,339 - main - INFO - User initiated login process
+2024-10-12 00:50:33,431 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
+2024-10-12 00:50:37,422 - main - INFO - User initiated login process
+2024-10-12 00:50:37,507 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
+2024-10-12 00:52:43,448 - main - INFO - SPOTIFY_REDIRECT_URI: http://StudentHub.petersweeney102.repl.co/auth/spotify/callback
+2024-10-12 00:52:43,448 - main - INFO - SPOTIFY_CLIENT_ID is set: Yes
+2024-10-12 00:52:43,448 - main - INFO - SPOTIFY_CLIENT_SECRET is set: Yes
+2024-10-12 00:52:45,480 - main - INFO - User initiated login process
+2024-10-12 00:52:45,644 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
+2024-10-12 00:52:47,167 - main - INFO - User initiated login process
+2024-10-12 00:52:47,172 - main - INFO - Redirecting user to Spotify auth URL: https://accounts.spotify.com/authorize?client_id=565398efdf96475184176661554b60a2&response_type=code&redirect_uri=http://StudentHub.petersweeney102.repl.co/auth/spotify/callback&scope=user-top-read&show_dialog=true
