@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const stickerRotationValue = document.getElementById('sticker-rotation-value');
     const stickerOpacity = document.getElementById('sticker-opacity');
     const stickerOpacityValue = document.getElementById('sticker-opacity-value');
+    const albumOpacity = document.getElementById('album-opacity');
+    const albumOpacityValue = document.getElementById('album-opacity-value');
+    const borderWidth = document.getElementById('border-width');
+    const borderWidthValue = document.getElementById('border-width-value');
+    const borderColor = document.getElementById('border-color');
     const regenerateBtn = document.getElementById('regenerate-btn');
     const downloadBtn = document.getElementById('download-btn');
 
@@ -94,6 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const size = stickerSize.value;
         const rotation = stickerRotation.value;
         const opacity = stickerOpacity.value;
+        const albumOpacityValue = albumOpacity.value;
+        const borderWidthValue = borderWidth.value;
+        const borderColorValue = borderColor.value;
+        
         const data = {
             template: template,
             color_palette: contentData.color_palette,
@@ -104,7 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
             stickers: selectedStickers,
             sticker_size: parseInt(size),
             sticker_rotation: parseInt(rotation),
-            sticker_opacity: parseInt(opacity)
+            sticker_opacity: parseInt(opacity),
+            album_opacity: parseInt(albumOpacityValue),
+            border_width: parseInt(borderWidthValue),
+            border_color: borderColorValue
         };
 
         fetch('/api/generate_wallpaper', {
@@ -153,6 +165,16 @@ document.addEventListener('DOMContentLoaded', () => {
         stickerOpacityValue.textContent = `${opacityPercentage}%`;
         generateWallpaper();
     });
+    albumOpacity.addEventListener('input', () => {
+        const opacityPercentage = Math.round((albumOpacity.value / 255) * 100);
+        albumOpacityValue.textContent = `${opacityPercentage}%`;
+        generateWallpaper();
+    });
+    borderWidth.addEventListener('input', () => {
+        borderWidthValue.textContent = `${borderWidth.value}px`;
+        generateWallpaper();
+    });
+    borderColor.addEventListener('input', generateWallpaper);
 
     // Initial content fetch
     fetchContent();
